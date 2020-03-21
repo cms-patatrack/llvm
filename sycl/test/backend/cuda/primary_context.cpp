@@ -1,5 +1,5 @@
 // REQUIRES: cuda
-// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple %s -I%opencl_include_dir -I%cuda_toolkit_include -o %t.out -lcuda -lsycl
+// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple %s -I%opencl_include_dir -I%cuda_toolkit_include -I%sycl_plugins_dir/cuda -o %t.out -lcuda -lsycl
 // RUN: env SYCL_DEVICE_TYPE=GPU %t.out
 // NOTE: OpenCL is required for the runtime, even when using the CUDA BE.
 
@@ -11,23 +11,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "../../helpers.hpp"
 #include <CL/sycl.hpp>
-#include <CL/sycl/detail/pi_cuda.hpp>
 #include <cuda.h>
 #include <iostream>
+#include <pi_cuda.hpp>
 
 using namespace cl::sycl;
-
-void check(bool condition, const char *conditionString, const char *filename,
-           const long line) noexcept {
-  if (!condition) {
-    std::cerr << "CHECK failed in " << filename << "#" << line << " "
-              << conditionString << "\n";
-    std::abort();
-  }
-}
-
-#define CHECK(CONDITION) check(CONDITION, #CONDITION, __FILE__, __LINE__)
 
 bool isCudaDevice(const device &dev) {
   const platform platform = dev.get_info<info::device::platform>();

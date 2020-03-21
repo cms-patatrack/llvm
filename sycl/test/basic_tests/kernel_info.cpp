@@ -11,20 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "../helpers.hpp"
 #include <CL/sycl.hpp>
 
 using namespace cl::sycl;
-
-void check(bool condition, const char *conditionString, const char *filename,
-           const long line) noexcept {
-  if (!condition) {
-    std::cerr << "CHECK failed in " << filename << "#" << line << " "
-              << conditionString << "\n";
-    std::abort();
-  }
-}
-
-#define CHECK(CONDITION) check(CONDITION, #CONDITION, __FILE__, __LINE__)
 
 int main() {
   queue q;

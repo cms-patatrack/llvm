@@ -1,3 +1,6 @@
+// XFAIL: cuda
+// TODO: Fix fail for CUDA.
+
 // RUN: %clangxx %s -o %t1.out -lsycl -I %sycl_include
 // RUN: env SYCL_DEVICE_TYPE=HOST %t1.out
 // RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple  %s -o %t2.out
@@ -5,9 +8,6 @@
 // RUN: %CPU_RUN_PLACEHOLDER %t2.out
 // RUN: %GPU_RUN_PLACEHOLDER %t2.out
 // RUN: %ACC_RUN_PLACEHOLDER %t2.out
-
-// TODO: cuda_piEnqueueMemBufferCopy not implemented
-// XFAIL: cuda
 
 //==------------- buffer_full_copy.cpp - SYCL buffer basic test ------------==//
 //
@@ -164,24 +164,21 @@ void check_copy_host_to_device(cl::sycl::queue &Queue) {
     // check that there was no data corruption/loss
     for (int i = 0; i < size; ++i) {
       for (int j = 0; j < size; ++j)
-        assert(expected_res_3[i * size + j] == acc_1[i][j]);
+        CHECK(expected_res_3[i * size + j] == acc_1[i][j]);
     }
 
     for (int i = 0; i < size / 2; ++i)
       for (int j = 0; j < size / 2; ++j)
-        assert(expected_res_4[i * size / 2 + j] == acc_2[i][j]);
+        CHECK(expected_res_4[i * size / 2 + j] == acc_2[i][j]);
   }
 }
 
 int main() {
-  try {
-    cl::sycl::queue Queue;
-    check_copy_host_to_device(Queue);
-    check_copy_device_to_host(Queue);
-    check_fill(Queue);
-  } catch (cl::sycl::exception &ex) {
-    std::cerr << ex.what() << std::endl;
-  }
+  // Not catching exceptions to make test fail instead.
+  cl::sycl::queue Queue;
+  check_copy_host_to_device(Queue);
+  check_copy_device_to_host(Queue);
+  check_fill(Queue);
 
   return 0;
 }
