@@ -20,6 +20,7 @@ int main() {
     context c;
   } catch (device_error e) {
     std::cout << "Failed to create device for context" << std::endl;
+    throw;
   }
 
   auto devices = device::get_devices();
