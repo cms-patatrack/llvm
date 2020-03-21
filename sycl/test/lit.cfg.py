@@ -72,8 +72,9 @@ if 'SYCL_DEVICE_WHITE_LIST' in os.environ:
 
 config.substitutions.append( ('%sycl_libs_dir',  config.sycl_libs_dir ) )
 config.substitutions.append( ('%sycl_include',  config.sycl_include ) )
-config.substitutions.append( ('%opencl_libs_dir',  config.opencl_libs_dir) )
 config.substitutions.append( ('%sycl_source_dir', config.sycl_source_dir) )
+config.substitutions.append( ('%sycl_plugins_dir', config.sycl_plugins_dir) )
+config.substitutions.append( ('%opencl_libs_dir',  config.opencl_libs_dir) )
 config.substitutions.append( ('%opencl_include_dir',  config.opencl_include_dir) )
 config.substitutions.append( ('%cuda_toolkit_include',  config.cuda_toolkit_include) )
 
@@ -113,7 +114,7 @@ def getDeviceCount(device_type):
     if len(result) > 1 and len(result[1]):
         print("getDeviceCount {TYPE}:{MSG}".format(
             TYPE=device_type, MSG=result[1]))
-        if re.match(r".*cuda", result[1]):
+        if re.match(r".*cuda.*", result[1]):
             is_cuda = True;
     if err:
         print("getDeviceCount {TYPE}:{ERR}".format(
@@ -156,6 +157,8 @@ if gpu_count > 0:
     config.available_features.add('gpu')
     if cuda:
        config.available_features.add('cuda')
+       gpu_run_substitute += " SYCL_BE=PI_CUDA "
+
 
     if platform.system() == "Linux":
         gpu_run_on_linux_substitute = "env SYCL_DEVICE_TYPE=GPU "
